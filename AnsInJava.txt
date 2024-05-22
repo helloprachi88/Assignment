@@ -27,7 +27,7 @@ public class GenerateCertificate {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         try {
-            // Step 1: Login
+            // Que 1: Login
             driver.get("https://accounts.teachmint.com/");
             WebElement phoneInput = driver.findElement(By.xpath("//input[@type='text']"));
             phoneInput.sendKeys("0000020232");
@@ -48,37 +48,37 @@ public class GenerateCertificate {
             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("loader")));
             wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loader")));
 
-            // Step 2: Navigate to certificates
+            // Que 2: Navigate to certificates
             WebElement dashboardLink = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='Dashboard']")));
             dashboardLink.click();
             WebElement certificatesMenu = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='Certificates']")));
             certificatesMenu.click();
 
-            // Step 3: Select the certificate type
+            // Que 3: Select the certificate type
             WebElement certificateTypeDropdown = wait.until(ExpectedConditions.elementToBeClickable(By.id("certificateTypeDropdown")));
             certificateTypeDropdown.click();
             List<WebElement> certificateOptions = driver.findElements(By.xpath("//li[contains(text(), 'School Leaving Certificate')]"));
             certificateOptions.get(0).click(); // Select "School Leaving Certificate"
 
-            // Step 4: Search and select the student
+            // Que 4: Search and select the student
             WebElement studentSearchInput = wait.until(ExpectedConditions.elementToBeClickable(By.id("studentSearchInput")));
             studentSearchInput.sendKeys("Sam");
             List<WebElement> studentOptions = driver.findElements(By.xpath("//li[contains(text(), 'Sam')]"));
             studentOptions.get(0).click(); // Select the student
 
-            // Step 5: Click on generate
+            // Que 5: Click on generate
             WebElement generateButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("generateButton")));
             generateButton.click();
 
-            // Step 6: Update remarks
+            // Que 6: Update remarks
             WebElement remarksInput = wait.until(ExpectedConditions.elementToBeClickable(By.id("remarksInput")));
             remarksInput.sendKeys("Completed school successfully.");
 
-            // Step 7: Generate and download
+            // Que 7: Generate and download
             WebElement generateAndDownloadButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("generateAndDownloadButton")));
             generateAndDownloadButton.click();
 
-            // Step 8: Validate the history of certificates
+            // Que 8: Validate the history of certificates
             WebElement historyTab = wait.until(ExpectedConditions.elementToBeClickable(By.id("historyTab")));
             historyTab.click();
             List<WebElement> certificateHistory = driver.findElements(By.xpath("//table[@id='historyTable']//tr"));
