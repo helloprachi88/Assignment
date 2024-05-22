@@ -1,0 +1,95 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import java.time.Duration;
+import java.util.List;
+
+public class GenerateCertificate {
+
+    public static void main(String[] args) {
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-extensions", "--disable-user-media-security=true",
+                "--allow-file-access-from-files", "--use-fake-device-for-media-stream",
+                "--use-fake-ui-for-media-stream", "--disable-popup-blocking",
+                "--disable-infobars", "--enable-usermedia-screen-capturing",
+                "--disable-dev-shm-usage", "--no-sandbox",
+                "--auto-select-desktop-capture-source=Screen 1",
+                "--disable-blink-features=AutomationControlled");
+
+        WebDriver driver = new ChromeDriver(options);
+        driver.manage().window().maximize();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+
+        try {
+            // Step 1: Login
+            driver.get("https://accounts.teachmint.com/");
+            WebElement phoneInput = driver.findElement(By.xpath("//input[@type='text']"));
+            phoneInput.sendKeys("0000020232");
+            driver.findElement(By.id("send-otp-btn-id")).click();
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("loader")));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loader")));
+
+            // Manually enter the OTP or automate if possible
+            // WebElement otpInput = driver.findElement(By.xpath("//input[@data-group-idx='0']"));
+            // otpInput.sendKeys("120992"); // Example OTP
+            for (int i = 0; i < 6; i++) {
+                driver.findElement(By.xpath("//input[@data-group-idx='" + i + "']")).sendKeys("1"); // Example OTP digits
+            }
+            driver.findElement(By.id("submit-otp-btn-id")).click();
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("loader")));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loader")));
+            driver.findElement(By.xpath("//span[@onclick='onSkipPassCreationClick()']")).click();
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("loader")));
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loader")));
+
+            // Step 2: Navigate to certificates
+            WebElement dashboardLink = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='Dashboard']")));
+            dashboardLink.click();
+            WebElement certificatesMenu = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[text()='Certificates']")));
+            certificatesMenu.click();
+
+            // Step 3: Select the certificate type
+            WebElement certificateTypeDropdown = wait.until(ExpectedConditions.elementToBeClickable(By.id("certificateTypeDropdown")));
+            certificateTypeDropdown.click();
+            List<WebElement> certificateOptions = driver.findElements(By.xpath("//li[contains(text(), 'School Leaving Certificate')]"));
+            certificateOptions.get(0).click(); // Select "School Leaving Certificate"
+
+            // Step 4: Search and select the student
+            WebElement studentSearchInput = wait.until(ExpectedConditions.elementToBeClickable(By.id("studentSearchInput")));
+            studentSearchInput.sendKeys("Sam");
+            List<WebElement> studentOptions = driver.findElements(By.xpath("//li[contains(text(), 'Sam')]"));
+            studentOptions.get(0).click(); // Select the student
+
+            // Step 5: Click on generate
+            WebElement generateButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("generateButton")));
+            generateButton.click();
+
+            // Step 6: Update remarks
+            WebElement remarksInput = wait.until(ExpectedConditions.elementToBeClickable(By.id("remarksInput")));
+            remarksInput.sendKeys("Completed school successfully.");
+
+            // Step 7: Generate and download
+            WebElement generateAndDownloadButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("generateAndDownloadButton")));
+            generateAndDownloadButton.click();
+
+            // Step 8: Validate the history of certificates
+            WebElement historyTab = wait.until(ExpectedConditions.elementToBeClickable(By.id("historyTab")));
+            historyTab.click();
+            List<WebElement> certificateHistory = driver.findElements(By.xpath("//table[@id='historyTable']//tr"));
+            for (WebElement row : certificateHistory) {
+                System.out.println(row.getText());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            driver.quit();
+        }
+    }
+}
